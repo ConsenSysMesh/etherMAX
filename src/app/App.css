@@ -3,3 +3,16 @@ button {
         border-radius: 10px;
         padding: 5px;
 }
+
+.button {
+        background: lightgray;
+        border-radius: 10px;
+        padding: 5px;
+        font: bold 11px Arial;
+        text-decoration: none;
+        color: #333333;
+        border-top: 1px solid #CCCCCC;
+        border-right: 1px solid #333333;
+        border-bottom: 1px solid #333333;
+        border-left: 1px solid #CCCCCC;
+}
