@@ -1,6 +1,6 @@
 import "StandardToken";
 
-contract ContestFactory {
+contract Contest {
   event Enter(address indexed owner, uint indexed contestId, uint entryId);
 
   struct Entry {
@@ -135,7 +135,7 @@ contract ContestFactory {
     c.isBonded[msg.sender] = false;
   }
   
-  function wd(uint contestId, uint entryId) {
+  function withdraw(uint contestId, uint entryId) {
     if (contestId > contestCount)
       return;
 
