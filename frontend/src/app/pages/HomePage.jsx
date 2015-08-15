@@ -8,6 +8,7 @@ import Reflux from 'reflux';
 
 import ProviderStore from '../stores/ProviderStore.jsx';
 import ProviderActions from '../actions/ProviderActions.jsx';
+import Contracts from '../../Contracts.jsx';
 
 
 // Router Components
@@ -17,7 +18,7 @@ export default React.createClass({
   mixins: [StateMixinFactory(Reflux).connect(ProviderStore)],
   getInitialState() {
     return {
-      contractAddress: '0x'
+      contractAddress: Contracts.Contest.address
     };
   },
   setContract(e) {
@@ -37,7 +38,7 @@ export default React.createClass({
         <div>
           <div>
             <h3>Enter the contest factory address</h3>
-            <input onChange={this.setContract}></input>
+            <input style={{width: '400px'}} value={this.state.contractAddress} onChange={this.setContract}></input>
             <Link className='button' href={'/' + this.state.contractAddress}>Enter</Link>
           </div>
         </div>
