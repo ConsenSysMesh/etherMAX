@@ -1,3 +1,5 @@
+import "StandardToken";
+
 contract ContestFactory {
   event Enter(address indexed owner, uint indexed contestId, uint entryId);
 
@@ -147,7 +149,8 @@ contract ContestFactory {
   }
 
   // method for claiming the best solution, can be called mutliple times
-  function claimSolve(uint contestId, uint solutionId, bool last, uint[] winners) {
+//  function claimSolve(uint contestId, uint solutionId, bool last, uint[] winners) {
+  function claimSolve(uint[] winners, uint contestId, uint solutionId, bool last) {
     if (contestId > contestCount)
       return;
 
@@ -186,27 +189,26 @@ contract ContestFactory {
         betterSolutions++;
     }
 
-  /*
     if (solutionInterval == betterSolutions) {
-      uint winnerIndex;
-      uint currentWinner;
+      //uint currentWinner;
       uint prevWinner = s.prevWinner;
       uint provedValue = s.provedValue;
       uint itemCount = s.itemCount;
 
       Entry e;
       // Append the winners to the 
-      for (winnerIndex = 0; winnerIndex < winners.length; winnerIndex++) {
-        currentWinner = winners[winnerIndex];
-        if (currentWinner < prevWinner)
+
+      for (index = 0; index < winners.length; index++) {
+        betterSolutions = winners[index];
+        if (betterSolutions < prevWinner)
           s.didFail = true;
 
-        e = c.entries[currentWinner];
+        e = c.entries[betterSolutions];
         provedValue += e.itemCount * e.itemPrice;
         itemCount += e.itemCount;
 
-        prevWinner = currentWinner;
-        s.winners[s.winners.length++] = currentWinner;
+        prevWinner = betterSolutions;
+        s.winners[s.winners.length++] = betterSolutions;
       }
 
       s.provedValue = provedValue;
@@ -214,12 +216,10 @@ contract ContestFactory {
     }
 
     if (!s.didFail && last && s.provedValue == s.value && s.itemCount < c.maxItems) {
-      uint reward = s.value * uint(c.reward) / denom;
-      msg.sender.send(c.solverBond + reward + c.entryFees);
+      msg.sender.send(c.solverBond + s.value * uint(c.reward) / denom + c.entryFees);
       c.solution = solutionId;
-      //c.token = address(new StandardToken(s.itemCount));
+      c.token = address(new StandardToken(s.itemCount));
     }
-  */
   }
 
   // Pass in the index of the solution's array of winning entries that corresponds to your entry
@@ -232,7 +232,7 @@ contract ContestFactory {
     Entry e = c.entries[s.winners[winnerId]];
 
     if (e.owner == msg.sender) {
-      //StandardToken(c.token).sendCoin(e.itemCount, msg.sender);
+      StandardToken(c.token).sendCoin(e.itemCount, msg.sender);
       e.itemCount = 0;
     }
   }
