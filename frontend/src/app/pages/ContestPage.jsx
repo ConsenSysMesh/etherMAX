@@ -2,19 +2,12 @@ import React  from 'react/addons';
 import Reflux from 'reflux';
 import web3   from 'web3';
 import { TXComponent } from 'reflux-tx';
-//import EntryPage from './EntryPage.jsx';
 import StateMixinFactory from 'reflux-state-mixin';
 import ContestStore from '../stores/ContestStore.jsx';
 import ContestActions from '../actions/ContestActions.jsx';
 import ContestList from '../components/ContestList.jsx';
 import NewContest from './NewContest.jsx';
-//import Router from 'react-router-component';
 import Contracts from '../../Contracts.jsx';
-
-/*
-var Locations = Router.Locations;
-var Location = Router.Location;
-*/
 
 export default React.createClass({
   mixins: [StateMixinFactory(Reflux).connect(ContestStore)],

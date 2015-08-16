@@ -11,9 +11,7 @@ export default React.createClass({
   contract: Contracts.Contest,
 
   componentWillReceiveProps(nextProps) {
-    console.log('nextprops', nextProps.pending.length);
     if (this.props.pending.length !== nextProps.pending.length) {
-      console.log('reloading');
       ContestActions.load(this.props.contractAddress, this.props.options);
     }
   },
@@ -36,14 +34,17 @@ export default React.createClass({
           );
     }.bind(this));
     
+    var start = (this.props.options.page - 1) * this.props.options.count;
+    
     var list = this.props.contests.filter(function(contest) {
       return contest !== null;
     }).map(function(contest, index) {
-      console.log('contest', contest, index);
+      var adjustedIndex = start + this.props.contests.length - 1 - index;
+
       return (
           <li style={{'padding-top': '10px'}}>
             <div>
-              <Link className='button' href={'/' + this.props.contractAddress + '/' + index}>
+              <Link className='button' href={'/' + this.props.contractAddress + '/' + adjustedIndex}>
                 <span style={{'margin-right': '30px'}}>
                 { (new Date().getTime() / 1000 - contest.created - contest.entryPeriod < 0) ? 'active  ' : 'inactive'}
                 </span>
