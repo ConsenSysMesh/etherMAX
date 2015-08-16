@@ -15,6 +15,7 @@ export default Reflux.createStore({
 
   getInitialState() {
     return {
+      options: {},
       contests: []
     };
   },
@@ -41,6 +42,7 @@ export default Reflux.createStore({
 
   onLoad(address, opts) {
     var options = _.assign({'page': 1, 'count': 20, 'skip': 0}, opts);
+    this.setState({options: options});
 
     var batch = web3.createBatch();
     var contestContract = this.contract.at(address);

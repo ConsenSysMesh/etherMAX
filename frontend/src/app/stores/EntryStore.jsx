@@ -20,7 +20,7 @@ export default Reflux.createStore({
     };
   },
 
-  onLoad(payload) {
+  onLoad(address, payload) {
     var options = _.assign({'page': 1, 'count': 20, 'skip': 0}, payload);
     // load contract.entries[page-1+skip*count: math.min(count, entryCount)] from here
   }

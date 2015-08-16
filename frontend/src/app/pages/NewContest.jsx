@@ -13,13 +13,12 @@ export default React.createClass({
   submitContest() {
     var fieldVals = this.fields.map(function(f) {
       var val = this.refs[f].getDOMNode().value;
-      //return eval(val) || val;
       return eval(val);
     }.bind(this));
-    console.log('fieldVals', fieldVals);
+
     var params = fieldVals.push({from: web3.eth.coinbase, gas: 3000000, value: 100});
     var hash = this.contract.at(this.props.contractAddress).newContest.sendTransaction.apply(this, fieldVals);
-    console.log('hash:)', hash);
+    TXActions.add({hash: hash, address: this.props.contractAddress});
   },
   render() {
     return (
