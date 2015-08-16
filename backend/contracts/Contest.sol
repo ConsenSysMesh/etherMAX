@@ -44,7 +44,6 @@ contract Contest {
 
     uint entryFees;
 
-    Entry[] entries;
     Solution[] solutions;
     mapping (address => bool) isBonded;
   }
@@ -88,9 +87,9 @@ contract Contest {
     // Add entry fees to pot
     c.entryFees += entryFee;
 
-    uint index = c.entries.length++;
+    uint index = entryCount[contestId]++;
 
-    Entry e = c.entries[index];
+    Entry e = entries[contestId][index];
 
     e.owner = msg.sender;
     e.itemCount = itemCount;
@@ -140,7 +139,7 @@ contract Contest {
       return;
 
     Contest c = contests[contestId];
-    Entry e = c.entries[entryId];
+    Entry e = entries[contestId][entryId];
     if (e.owner != msg.sender)
       return;
 
@@ -190,7 +189,6 @@ contract Contest {
     }
 
     if (solutionInterval == betterSolutions) {
-      //uint currentWinner;
       uint prevWinner = s.prevWinner;
       uint provedValue = s.provedValue;
       uint itemCount = s.itemCount;
@@ -203,7 +201,8 @@ contract Contest {
         if (betterSolutions < prevWinner)
           s.didFail = true;
 
-        e = c.entries[betterSolutions];
+        e = entries[contestId][betterSolutions];
+
         provedValue += e.itemCount * e.itemPrice;
         itemCount += e.itemCount;
 
@@ -229,7 +228,7 @@ contract Contest {
     if (c.solution == 0) return;
 
     Solution s = c.solutions[c.solution];
-    Entry e = c.entries[s.winners[winnerId]];
+    Entry e = entries[contestId][s.winners[winnerId]];
 
     if (e.owner == msg.sender) {
       StandardToken(c.token).sendCoin(e.itemCount, msg.sender);
@@ -242,5 +241,7 @@ contract Contest {
   uint32 constant claimPeriod = 60 * 60;
 
   mapping (uint => Contest) public contests;
+  mapping (uint => mapping (uint => Entry)) public entries;
+  mapping (uint => uint) public entryCount;
   uint public contestCount;
 }
