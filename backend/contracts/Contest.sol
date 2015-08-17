@@ -13,7 +13,7 @@ contract Contest {
     address owner;
     uint32 created;
     uint contestId;
-    uint value;
+    uint maxEth;
     uint itemCount;
 
     uint provedValue;
@@ -45,7 +45,6 @@ contract Contest {
     uint entryFees;
 
     Solution[] solutions;
-    mapping (address => bool) isBonded;
   }
 
   function newContest(uint32 entryPeriod, uint minPrice, uint maxItems, uint32 solvePeriod, uint solverBond, uint32 reward) {
@@ -97,7 +96,7 @@ contract Contest {
     Enter(msg.sender, contestId, index);
   }
 
-  function proposeSolve(uint contestId, uint value) {
+  function proposeSolve(uint contestId, uint maxEth) {
     if (contestId > contestCount)
       return;
 
@@ -106,17 +105,17 @@ contract Contest {
     if (uint32(block.timestamp) > (c.created + c.entryPeriod+ c.solvePeriod))
       return;
 
-    if (!c.isBonded[msg.sender])
+    if (!isBonded[contestId][msg.sender])
       if (msg.value >= c.solverBond)
-        c.isBonded[msg.sender] = true;
-    if (!c.isBonded[msg.sender])
+        isBonded[contestId][msg.sender] = true;
+    if (!isBonded[contestId][msg.sender])
       return;
 
     Solution s = c.solutions[c.solutions.length++];
     s.owner = msg.sender;
     s.created = uint32(block.timestamp);
     s.contestId = contestId;
-    s.value = value;
+    s.maxEth = maxEth;
   }
 
   function claimBond(uint contestId) {
@@ -128,10 +127,10 @@ contract Contest {
     if (block.timestamp < c.created + (c.solutions.length * c.claimPeriod) + c.entryPeriod + c.solvePeriod)
       return;
 
-    if (c.isBonded[msg.sender])
+    if (isBonded[contestId][msg.sender])
       msg.sender.send(c.solverBond);
 
-    c.isBonded[msg.sender] = false;
+    isBonded[contestId][msg.sender] = false;
   }
   
   function withdraw(uint contestId, uint entryId) {
@@ -148,7 +147,6 @@ contract Contest {
   }
 
   // method for claiming the best solution, can be called mutliple times
-//  function claimSolve(uint contestId, uint solutionId, bool last, uint[] winners) {
   function claimSolve(uint[] winners, uint contestId, uint solutionId, bool last) {
     if (contestId > contestCount)
       return;
@@ -181,10 +179,10 @@ contract Contest {
       }
 
       s = c.solutions[index];
-      if (s.value > ms.value)
+      if (s.maxEth > ms.maxEth)
         betterSolutions++;
 
-      if (s.value == ms.value && !mineSeen)
+      if (s.maxEth == ms.maxEth && !mineSeen)
         betterSolutions++;
     }
 
@@ -214,8 +212,8 @@ contract Contest {
       s.prevWinner = prevWinner;
     }
 
-    if (!s.didFail && last && s.provedValue == s.value && s.itemCount < c.maxItems) {
-      msg.sender.send(c.solverBond + s.value * uint(c.reward) / denom + c.entryFees);
+    if (!s.didFail && last && s.provedValue == s.maxEth && s.itemCount < c.maxItems) {
+      msg.sender.send(c.solverBond + s.maxEth * uint(c.reward) / denom + c.entryFees);
       c.solution = solutionId;
       c.token = address(new StandardToken(s.itemCount));
     }
@@ -243,5 +241,6 @@ contract Contest {
   mapping (uint => Contest) public contests;
   mapping (uint => mapping (uint => Entry)) public entries;
   mapping (uint => uint) public entryCount;
+  mapping (uint => mapping (address => bool)) public isBonded;
   uint public contestCount;
 }
