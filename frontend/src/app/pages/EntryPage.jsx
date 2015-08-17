@@ -66,28 +66,67 @@ export default React.createClass({
     return contest.created;
 
   },
-  getInputForm() {
+  getState() {
     var contest = this.state.contest;
+    var curTime = new Date().getTime() / 1000;
 
     if (!contest) return <div />;
+    var created = parseInt(contest.created);
+    var entryPeriod = parseInt(contest.entryPeriod);
+    var solvePeriod = parseInt(contest.solvePeriod);
+    var claimPeriod = parseInt(contest.claimPeriod);
 
-    var enterable = new Date().getTime() / 1000 - contest.created < contest.entryPeriod;
+    var enterable = curTime - created < entryPeriod;
 
-    if (!enterable)
-      return <div />;
-    else
+    var solvable = !enterable && curTime - created < entryPeriod + solvePeriod;
+
+    var solved = this.state.contest.solution > 0;
+    var claimingPeriod = !enterable && !solvable && curTime - created < entryPeriod + solvePeriod + claimPeriod * this.state.entries.length;
+    //var unsolved = curTime - created > entryPeriod + solvePeriod + claimPeriod * this.state.contest.solutions.length;
+    var remainingSeconds = 0;
+
+    /*
+    if (unsolved) {
+      return (
+          <div>
+            {'no valid solution was provided :('}
+          </div>
+          );
+    } else 
+    */
+    if (solved) {
+      return (
+          <div>
+            {'a packing solution has been found, see if you won: <>'}
+          </div>
+          );
+    } else if (solvable) {
+      remainingSeconds = parseInt(contest.created) + parseInt(contest.entryPeriod) + parseInt(contest.solvePeriod) - curTime;
       return (
           <div>
             <div>
-              {'How many tokens to purchase (max: ' + this.state.contest.maxItems + ')'}
+              {'waiting for solutions for the next '} 
+              { Math.floor(remainingSeconds) + ' seconds' }
+            </div>
+          </div>
+          );
+    } else if (enterable) {
+      remainingSeconds = parseInt(contest.created) + parseInt(contest.entryPeriod) - curTime;
+      return (
+          <div>
+            <div>
+              {'New entries allowed for the next ' + Math.floor(remainingSeconds) + ' seconds'}
+            </div>
+            <div>
+              {'How many tokens to purchase '}
               <div>
-                <input ref={'itemCount'} value={this.state.itemCount} onChange={this.update}/>
+                <input ref={'itemCount'} value={this.state.itemCount} onChange={this.update} />
               </div>
             </div>
             <div>
-              {'Price per token (min: ' + this.state.contest.minPrice + ')'}
+              {'Price per token '}
               <div>
-                <input ref={'itemPrice'} value={this.state.itemPrice} onChange={this.update}/>
+                <input ref={'itemPrice'} value={this.state.itemPrice} onChange={this.update} />
               </div>
             </div>
             <div>
@@ -96,12 +135,13 @@ export default React.createClass({
             <button onClick={this.submit}>Submit entry</button>
           </div>
         );
+    } else return <div />;
   },
   render() {
 
     return (
         <div>
-          {this.getInputForm()}
+          {this.getState()}
           <div>
             <TXComponent filter={{address: this.props.contractAddress, contest: this.props.contestId}}>
               <EntryList {...this.props} {...this.state} />

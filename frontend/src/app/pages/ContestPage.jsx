@@ -18,9 +18,6 @@ export default React.createClass({
     //<TXComponent filter={}> <ContestList contests={this.state.contests} />
     return (
         <div>
-          <div>
-            {'Contest page'}
-          </div>
           <NewContest {...this.props} />
           <div>
             <h3>Contests</h3>

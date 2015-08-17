@@ -11,9 +11,15 @@ export default React.createClass({
     'entryPeriod', 'maxItems', 'minPrice', 'reward', 'solvePeriod', 'solverBond'
   ],
   submitContest() {
+
     var fieldVals = this.fields.map(function(f) {
       var val = this.refs[f].getDOMNode().value;
-      return eval(val);
+      if (f === 'reward') {
+        if (val < 0) val = 0;
+        if (val > 1) val = 1;
+
+        return web3.toBigNumber(2).pow(32).mul(Math.floor(val));
+      } else return eval(val);
     }.bind(this));
 
     var params = fieldVals.push({from: web3.eth.coinbase, gas: 3000000, value: 100});
@@ -23,7 +29,7 @@ export default React.createClass({
   render() {
     return (
         <div>
-          {'Create contest'}
+          <h3>{'Create contest'}</h3>
           <div>
             <div>
               {'time allotted to make an offer'}
@@ -38,7 +44,7 @@ export default React.createClass({
           </div>
           <div>
             <div>
-              {'tokens for sell'}
+              {'tokens for sale'}
             </div>
             <input ref='maxItems'/>
           </div>
