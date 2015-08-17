@@ -1,6 +1,6 @@
 ## etherMAX
 
-etherMAX is a contest built on Ethereum to incentivize computing the combination of bids that will optimize the amount of ETH raised
+etherMAX is a contest built on Ethereum to incentivize solving an optimization problem. The app was built for a ConsenSys DApp-athon
 
 On etherMAX, anyone can create their own token sale by describing 1) the max number of tokens available, 2) a minimum price per token, 3) length of sale 4) bond required for each matcher, 5) amount of time allotted to find optimal matches, and 6) a % reward to the best matcher
 
@@ -28,4 +28,6 @@ Contests are created with this method:
 
 You can run a simple interface for creating contests & entries by running `cd frontend && npm start`
 
-A very naiive knapsack solver can be run with `cd solver && npm install && node server <contractAddress> <contestId>`
+To run a very un-optimize knapsack solver run `cd solver && npm install && node server <contractAddress> <contestId>`
+
+To deploy this code to an ethereum client, run `npm install -g truffle && cd backend && truffle deploy`
